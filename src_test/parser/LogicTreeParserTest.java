@@ -36,14 +36,9 @@ public class LogicTreeParserTest {
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
 		Tree<LogicTreeNode> tree = parser.parse();
-		assertEquals("",
-				tree.getRootElement().data
-						.getUncertaintyModel());
-		assertEquals("",
-				tree.getRootElement().data.getUncertaintyType());
-		assertEquals(1,
-				tree.getRootElement().data
-						.getUncertaintyWeight(), 0.0);
+		assertEquals("", tree.getRootElement().data.getUncertaintyModel());
+		assertEquals("", tree.getRootElement().data.getUncertaintyType());
+		assertEquals(1, tree.getRootElement().data.getUncertaintyWeight(), 0.0);
 	}
 
 	// check that the root element has only two children. Check also that
@@ -54,10 +49,8 @@ public class LogicTreeParserTest {
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
 		Tree<LogicTreeNode> tree = parser.parse();
-		assertEquals(2, tree.getRootElement().getChildren()
-				.size());
-		for (Node<LogicTreeNode> node : tree.getRootElement()
-				.getChildren()) {
+		assertEquals(2, tree.getRootElement().getChildren().size());
+		for (Node<LogicTreeNode> node : tree.getRootElement().getChildren()) {
 			assertTrue(node.data.getUncertaintyType().equalsIgnoreCase(
 					"sourceModel"));
 			assertTrue(node.data.getUncertaintyModel().equalsIgnoreCase(
@@ -84,31 +77,27 @@ public class LogicTreeParserTest {
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
 		Tree<LogicTreeNode> tree = parser.parse();
-		List<Node<LogicTreeNode>> nodeList = tree
-				.getRootElement().getChildren();
+		List<Node<LogicTreeNode>> nodeList = tree.getRootElement()
+				.getChildren();
 		for (Node<LogicTreeNode> node : nodeList) {
 			assertEquals(3, node.getChildren().size());
 			List<Node<LogicTreeNode>> children = node.getChildren();
 			for (Node<LogicTreeNode> child : children) {
-				assertTrue(child.data.getUncertaintyType()
-						.equalsIgnoreCase(
-								"maxMagGRRelativeCorrelated"));
-				assertTrue(child.data.getUncertaintyModel()
-						.equalsIgnoreCase("0.2")
-						|| child.data.getUncertaintyModel()
-								.equalsIgnoreCase("0.0")
-						|| child.data.getUncertaintyModel()
-								.equalsIgnoreCase("-0.2"));
-				if (child.data.getUncertaintyModel()
-						.equalsIgnoreCase("0.2")) {
+				assertTrue(child.data.getUncertaintyType().equalsIgnoreCase(
+						"maxMagGRRelativeCorrelated"));
+				assertTrue(child.data.getUncertaintyModel().equalsIgnoreCase(
+						"0.2")
+						|| child.data.getUncertaintyModel().equalsIgnoreCase(
+								"0.0")
+						|| child.data.getUncertaintyModel().equalsIgnoreCase(
+								"-0.2"));
+				if (child.data.getUncertaintyModel().equalsIgnoreCase("0.2")) {
 					assertEquals(0.2, child.data.getUncertaintyWeight(), 0);
 				}
-				if (child.data.getUncertaintyModel()
-						.equalsIgnoreCase("0.0")) {
+				if (child.data.getUncertaintyModel().equalsIgnoreCase("0.0")) {
 					assertEquals(0.6, child.data.getUncertaintyWeight(), 0);
 				}
-				if (child.data.getUncertaintyModel().equalsIgnoreCase(
-						"-0.2")) {
+				if (child.data.getUncertaintyModel().equalsIgnoreCase("-0.2")) {
 					assertEquals(0.2, child.data.getUncertaintyWeight(), 0);
 				}
 			}
@@ -123,32 +112,31 @@ public class LogicTreeParserTest {
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
 		Tree<LogicTreeNode> tree = parser.parse();
-		List<Node<LogicTreeNode>> nodeList = tree
-				.getRootElement().getChildren();
+		List<Node<LogicTreeNode>> nodeList = tree.getRootElement()
+				.getChildren();
 		for (Node<LogicTreeNode> node : nodeList) {
 			for (Node<LogicTreeNode> child : node.getChildren()) {
 				for (Node<LogicTreeNode> grandChild : child.getChildren()) {
 					assertTrue(grandChild.data.getUncertaintyType()
-							.equalsIgnoreCase(
-									"bGRRelativeCorrelated"));
+							.equalsIgnoreCase("bGRRelativeCorrelated"));
 					assertTrue(grandChild.data.getUncertaintyModel()
 							.equalsIgnoreCase("0.1")
 							|| grandChild.data.getUncertaintyModel()
 									.equalsIgnoreCase("0.0")
 							|| grandChild.data.getUncertaintyModel()
 									.equalsIgnoreCase("-0.1"));
-					if (grandChild.data.getUncertaintyModel()
-							.equalsIgnoreCase("0.1")) {
+					if (grandChild.data.getUncertaintyModel().equalsIgnoreCase(
+							"0.1")) {
 						assertEquals(0.2,
 								grandChild.data.getUncertaintyWeight(), 0);
 					}
-					if (grandChild.data.getUncertaintyModel()
-							.equalsIgnoreCase("0.0")) {
+					if (grandChild.data.getUncertaintyModel().equalsIgnoreCase(
+							"0.0")) {
 						assertEquals(0.6,
 								grandChild.data.getUncertaintyWeight(), 0);
 					}
-					if (grandChild.data.getUncertaintyModel()
-							.equalsIgnoreCase("-0.1")) {
+					if (grandChild.data.getUncertaintyModel().equalsIgnoreCase(
+							"-0.1")) {
 						assertEquals(0.2,
 								grandChild.data.getUncertaintyWeight(), 0);
 					}
@@ -170,68 +158,53 @@ public class LogicTreeParserTest {
 		assertEquals(18, tree.getLeafNodes().size());
 	}
 
-//	// check that two logic trees are defined one for Active Shallow Crust and a
-//	// second for Subduction Interface.
-//	@Test
-//	public void gmpeLogicTreeTest1() {
-//		LogicTreeParser parser = new LogicTreeParser(LT_GMPE_TEST_FILE);
-//		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
-//		for (String key : treeMap.keySet()) {
-//			assertTrue(key.equalsIgnoreCase("Active Shallow Crust")
-//					|| key.equalsIgnoreCase("Subduction Interface"));
-//		}
-//	}
-//
-//	// check that the logic tree defined for active shallow crust contains only two
-//	// nodes (BA_2008 and CB_2008).
-//	@Test
-//	public void gmpeLogicTreeTest2() {
-//		LogicTreeParser parser = new LogicTreeParser(LT_GMPE_TEST_FILE);
-//		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
-//		Tree<LogicTreeNode> tree = treeMap.get("Active Shallow Crust");
-//		List<Node<LogicTreeNode>> children = tree.getRootElement()
-//				.getChildren();
-//		assertEquals(2, children.size());
-//		for (Node<LogicTreeNode> child : children) {
-//			assertTrue(child.getChildren().isEmpty());
-//			assertTrue(child.data.getUncertaintyType().equalsIgnoreCase(
-//					"gmpeModel"));
-//			assertTrue(child.data.getUncertaintyModel().equalsIgnoreCase(
-//					"BA_2008_AttenRel")
-//					|| child.data.getUncertaintyModel().equalsIgnoreCase(
-//							"CB_2008_AttenRel"));
-//			if (child.data.getUncertaintyModel()
-//					.equalsIgnoreCase("BA_2008_AttenRel")) {
-//				assertEquals(0.5,
-//						child.data.getUncertaintyWeight(), 0);
-//			}
-//			if (child.data.getUncertaintyModel()
-//					.equalsIgnoreCase("CB_2008_AttenRel")) {
-//				assertEquals(0.5,
-//						child.data.getUncertaintyWeight(), 0);
-//			}
-//		}
-//	}
-//	
-//	// check that the logic tree defined for subduction interface contains one
-//	// node (McVerryetal_2000_AttenRel) with full weight.
-//	@Test
-//	public void gmpeLogicTreeTest3() {
-//		LogicTreeParser parser = new LogicTreeParser(LT_GMPE_TEST_FILE);
-//		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
-//		Tree<LogicTreeNode> tree = treeMap.get("Subduction Interface");
-//		List<Node<LogicTreeNode>> children = tree.getRootElement()
-//				.getChildren();
-//		assertEquals(1, children.size());
-//		for (Node<LogicTreeNode> child : children) {
-//			assertTrue(child.getChildren().isEmpty());
-//			assertTrue(child.data.getUncertaintyType().equalsIgnoreCase(
-//					"gmpeModel"));
-//			assertTrue(child.data.getUncertaintyModel().equalsIgnoreCase(
-//					"McVerryetal_2000_AttenRel"));
-//			assertEquals(1.0,
-//					child.data.getUncertaintyWeight(), 0);
-//		}
-//	}
+	// check that in the first branching level, two gmpes are defined for active
+	// shallow crust (BA_2008 and CB_2008).
+	@Test
+	public void gmpeLogicTreeTest1() {
+		LogicTreeParser parser = new LogicTreeParser(LT_GMPE_TEST_FILE);
+		Tree<LogicTreeNode> tree = parser.parse();
+		List<Node<LogicTreeNode>> children = tree.getRootElement()
+				.getChildren();
+		assertEquals(2, children.size());
+		for (Node<LogicTreeNode> child : children) {
+			assertTrue(child.data.getUncertaintyType().equalsIgnoreCase(
+					"gmpeModel"));
+			assertTrue(child.data.getUncertaintyModel().equalsIgnoreCase(
+					"BA_2008_AttenRel")
+					|| child.data.getUncertaintyModel().equalsIgnoreCase(
+							"CB_2008_AttenRel"));
+			if (child.data.getUncertaintyModel().equalsIgnoreCase(
+					"BA_2008_AttenRel")) {
+				assertEquals(0.5, child.data.getUncertaintyWeight(), 0);
+			}
+			if (child.data.getUncertaintyModel().equalsIgnoreCase(
+					"CB_2008_AttenRel")) {
+				assertEquals(0.5, child.data.getUncertaintyWeight(), 0);
+			}
+		}
+	}
+
+	// check that in the 2nd branching level one gmpe is defined
+	// (McVerryetal_2000_AttenRel) with full weight.
+	@Test
+	public void gmpeLogicTreeTest3() {
+		LogicTreeParser parser = new LogicTreeParser(LT_GMPE_TEST_FILE);
+		Tree<LogicTreeNode> tree = parser.parse();
+		List<Node<LogicTreeNode>> children = tree.getRootElement()
+				.getChildren();
+		for(Node<LogicTreeNode> child : children){
+			List<Node<LogicTreeNode>> grandChildren = child
+			.getChildren();
+			for (Node<LogicTreeNode> grandChild : grandChildren) {
+				assertTrue(grandChild.getChildren().isEmpty());
+				assertTrue(grandChild.data.getUncertaintyType().equalsIgnoreCase(
+						"gmpeModel"));
+				assertTrue(grandChild.data.getUncertaintyModel().equalsIgnoreCase(
+						"McVerryetal_2000_AttenRel"));
+				assertEquals(1.0, grandChild.data.getUncertaintyWeight(), 0);
+			}	
+		}
+	}
 
 }

@@ -2,29 +2,27 @@
 <nrml xmlns:gml="http://www.opengis.net/gml" 
       xmlns="http://openquake.org/xmlns/nrml/0.2"
       gml:id="n1">
-      
-    <logicTreeSet>
+
         <logicTree id="lt1">
-            <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel">
-                <logicTreeBranch branchID="_11activeCrust">
+        
+            <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel" applyToTectonicRegionType="Active Shallow Crust">
+                <logicTreeBranch branchID="_11">
                     <uncertaintyModel>BA_2008_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
                 </logicTreeBranch>
                 
-                <logicTreeBranch branchID="_12activeCrust">
+                <logicTreeBranch branchID="_12">
                     <uncertaintyModel>CB_2008_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
                 </logicTreeBranch>
             </logicTreeBranchSet>
-        </logicTree>
-        
-        <logicTree id="lt2">
-            <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel">
-                <logicTreeBranch branchID="_11interface">
+            
+            <logicTreeBranchSet branchingLevel="2" uncertaintyType="gmpeModel" applyToTectonicRegionType="Subduction Interface">
+                <logicTreeBranch branchID="_21">
                     <uncertaintyModel>McVerryetal_2000_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>1.0</uncertaintyWeight>
                 </logicTreeBranch>
             </logicTreeBranchSet>
         </logicTree>
-    </logicTreeSet>
+
 </nrml>
