@@ -125,7 +125,7 @@ public class LogicTreeProcessor {
 	 * Sample child from a list of children. The sampling is done using the
 	 * inverse transform method (See for instance:
 	 * "Computational Statistics Handbook with Matlab", Wendy L. Martinez, Angel
-	 * R. Martinez, CHAPMAP&ALL 2002).
+	 * R. Martinez, CHAPMAN&ALL 2002).
 	 */
 	private Node<LogicTreeNode> sampleChild(Random rn,
 			List<Node<LogicTreeNode>> children) {
@@ -150,13 +150,4 @@ public class LogicTreeProcessor {
 		return sampledNode;
 	}
 
-	//
-	// /**
-	// * Join multiple logic trees.
-	// */
-	// public Tree<LogicTreeNode> joinLogicTrees(List<Tree<LogicTreeNode>>
-	// treeList) {
-	// Tree<LogicTreeNode> newTree = null;
-	// return newTree;
-	// }
 }

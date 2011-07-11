@@ -18,8 +18,7 @@ import tree.Node;
 import tree.Tree;
 
 /**
- * Parse logicTreeSet element (that is a set of logic trees). Returns a
- * {@link Map} of {@link String}s and {@link Tree}s containing nodes of type
+ * Parse logicTree element. Returns a {@link Tree} containing nodes of type
  * {@link LogicTreeNode}.The root of each tree is defined as an 'empty' logic
  * tree node (that is with uncertainty type and uncertainty model set to empty
  * strings but with weight equal to 1).
@@ -31,10 +30,9 @@ public class LogicTreeParser {
 
 	private final BufferedReader bufferedReader;
 
-	private final Map<String, Tree<LogicTreeNode>> logicTreeHashMap;
+	private final Tree<LogicTreeNode> logicTree;
 
 	private static final String BRANCHING_LEVEL = "branchingLevel";
-	private static final String TECTONIC_REGION = "tectonicRegion";
 	private static final String UNCERTAINTY_TYPE = "uncertaintyType";
 	private static final String UNCERTAINTY_MODEL = "uncertaintyModel";
 	private static final String UNCERTAINTY_WEIGHT = "uncertaintyWeight";
@@ -51,17 +49,15 @@ public class LogicTreeParser {
 				fileInputStream);
 		this.bufferedReader = new BufferedReader(new InputStreamReader(
 				bufferedInputStream));
-		logicTreeHashMap = new HashMap<String, Tree<LogicTreeNode>>();
+		logicTree = new Tree<LogicTreeNode>();
+		// set root element as an empty branch
+		logicTree.setRootElement(new Node(new LogicTreeNode()));
 	}
 
 	/**
-	 * Reads file and returns logic tree data. The method loops over the
-	 * possible logic trees defined in the file. For each logic tree definition,
-	 * it creates a corresponding {@link Tree} object and stores it in a map
-	 * with a key that is the logic tree number or the tectonic region type (if
-	 * defined in the file).
+	 * Reads file and returns logic tree data.
 	 */
-	public Map<String, Tree<LogicTreeNode>> parse() {
+	public Tree<LogicTreeNode> parse() {
 		if (System.getProperty("openquake.nrml.schema") == null)
 			throw new RuntimeException(
 					"Set openquake.nrml.schema property to the NRML schema path");
@@ -83,74 +79,18 @@ public class LogicTreeParser {
 		}
 		Element root = doc.getRootElement(); // <nrml> element
 
-		/**
-		 * Makes a loop over the possible logic trees defined in the file. In
-		 * case of the GMPE logic tree file, multiple logic trees are defined,
-		 * one for each tectonic region implied by the source model. For the
-		 * source model logic tree file, currently only one logic tree is
-		 * defined. For each logic tree definition, creates a logic tree object.
-		 * Depending on the uncertainty type, additional attributed of the
-		 * branch class must be edited. In case of source model uncertainties, a
-		 * source model file must be specified. In case of parameter
-		 * uncertainties, a logic tree rule must be defined.
-		 */
-		int indexLogicTree = 1;
 		Iterator i = root.elements().iterator();
 		while (i.hasNext()) {
-			Element logicTreeSetElem = (Element) i.next();
-
-			Map<String, Tree<LogicTreeNode>> logicTrees = parseLogicTreeSet(
-					logicTreeSetElem, indexLogicTree);
-
-			for (String key : logicTrees.keySet()) {
-				logicTreeHashMap.put(key, logicTrees.get(key));
-			}
-
-			indexLogicTree++;
-		}
-		return logicTreeHashMap;
-	}
-
-	/**
-	 * Parse child elements of a &lt;logicTreeSet&gt; element.
-	 * 
-	 * @param logicTreeSet
-	 * @param indexLogicTree
-	 * @return Map of Trees, keyed by tectonicRegion. If no tectonicRegion is
-	 *         defined for a logicTree, keys will be "1" through "N", where N is
-	 *         the total number of logicTree elements in the logicTreeSet.
-	 */
-	private Map<String, Tree<LogicTreeNode>> parseLogicTreeSet(
-			Element logicTreeSet, int indexLogicTree) {
-
-		String key = Integer.toString(indexLogicTree);
-		Map<String, Tree<LogicTreeNode>> logicTrees = new HashMap<String, Tree<LogicTreeNode>>();
-		Iterator i = logicTreeSet.elementIterator();
-		while (i.hasNext()) {
 			Element elem = (Element) i.next();
-
-			// define tree structure
-			Tree<LogicTreeNode> logicTree = new Tree<LogicTreeNode>();
-
-			// set root element as an empty branch
-			Node<LogicTreeNode> logicTreeRoot = new Node(new LogicTreeNode());
-			logicTree.setRootElement(logicTreeRoot);
-
+			
 			// skip config for now
-			// TODO(LB): we might care about the <config> elem later
-			// at the time this was written, the example files did not
-			// include any config items
 			if (elem.getName().equals("config")) {
 				continue;
 			}
-
-			String tectonicRegion = parseLogicTree(elem, logicTree);
-			if (tectonicRegion != null) {
-				key = tectonicRegion;
-			}
-			logicTrees.put(key, logicTree);
+			
+			parseLogicTree(elem,logicTree);
 		}
-		return logicTrees;
+		return logicTree;
 	}
 
 	/**
@@ -158,12 +98,9 @@ public class LogicTreeParser {
 	 * 
 	 * @param logicTreeElem
 	 * @param logicTree
-	 * @return tectonicRegion of the logic tree (or null if none is defined)
 	 */
-	private String parseLogicTree(Element logicTreeElem,
+	private void parseLogicTree(Element logicTreeElem,
 			Tree<LogicTreeNode> logicTree) {
-
-		String tectonicRegion = logicTreeElem.attributeValue(TECTONIC_REGION);
 
 		Iterator i = logicTreeElem.elementIterator();
 		while (i.hasNext()) {
@@ -172,7 +109,6 @@ public class LogicTreeParser {
 			parseLogicTreeBranchSet(branchSet, logicTree);
 
 		}
-		return tectonicRegion;
 	}
 
 	/**

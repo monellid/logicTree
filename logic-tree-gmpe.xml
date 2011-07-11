@@ -4,23 +4,23 @@
       gml:id="n1">
       
     <logicTreeSet>
-        <logicTree id="lt1" tectonicRegion="Active Shallow Crust">
+        <logicTree id="lt1">
             <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel">
-                <logicTreeBranch>
+                <logicTreeBranch branchID="_11activeCrust">
                     <uncertaintyModel>BA_2008_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
                 </logicTreeBranch>
                 
-                <logicTreeBranch>
+                <logicTreeBranch branchID="_12activeCrust">
                     <uncertaintyModel>CB_2008_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
                 </logicTreeBranch>
             </logicTreeBranchSet>
         </logicTree>
         
-        <logicTree id="lt2" tectonicRegion="Subduction Interface">
+        <logicTree id="lt2">
             <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel">
-                <logicTreeBranch>
+                <logicTreeBranch branchID="_11interface">
                     <uncertaintyModel>McVerryetal_2000_AttenRel</uncertaintyModel>
                     <uncertaintyWeight>1.0</uncertaintyWeight>
                 </logicTreeBranch>

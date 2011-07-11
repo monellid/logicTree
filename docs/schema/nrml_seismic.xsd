@@ -306,8 +306,19 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="gmpeModel"/>
             <xs:enumeration value="sourceModel"/>
-            <xs:enumeration value="maxMagnitudeGutenbergRichterRelative"/>
-            <xs:enumeration value="bValueGutenbergRichterRelative"/>
+            <xs:enumeration value="maxMagGRRelativeCorrelated"/>
+            <xs:enumeration value="maxMagGRRelativeUncorrelated"/>
+            <xs:enumeration value="bGRRelativeCorrelated"/>
+            <xs:enumeration value="bGRRelativeUncorrelated"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="SourceType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="area"/>
+            <xs:enumeration value="point"/>
+            <xs:enumeration value="simpleFault"/>
+            <xs:enumeration value="complexFault"/>
         </xs:restriction>
     </xs:simpleType>
     
@@ -316,6 +327,8 @@
             <xs:element name="uncertaintyModel" type="xs:string"/>
             <xs:element name="uncertaintyWeight" type="NonNegativeDoubleType"/>
         </xs:sequence>
+        <xs:attribute name="branchID" type="xs:ID" use="required">
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="LogicTreeBranchSet">
@@ -324,6 +337,10 @@
         </xs:sequence>
         <xs:attribute name="branchingLevel" type="xs:positiveInteger" use="required"/>
         <xs:attribute name="uncertaintyType" type="LogicTreeBranchUncertaintyType" use="required"/>
+        <xs:attribute name="applyToBranches" type="gml:NCNameList" use="optional"></xs:attribute>
+        <xs:attribute name="applyToSources" type="gml:NCNameList" use="optional"></xs:attribute>
+        <xs:attribute name="applyToSourceType" type="SourceType" use="optional"></xs:attribute>
+        <xs:attribute name="applyToTectonicRegionType" type="TectonicRegion" use="optional"></xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="LogicTree">
@@ -331,7 +348,6 @@
             <xs:element name="logicTreeBranchSet" type="LogicTreeBranchSet"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="tectonicRegion" type="TectonicRegion"/>
     </xs:complexType>
 
     <!-- ============================================================= -->
@@ -348,6 +364,8 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <xs:element name="logicTree" type="LogicTree"/>
     
     <xs:element name="logicTreeSet" type="LogicTreeSet"/>
     <xs:complexType name="LogicTreeSet">
