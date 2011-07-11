@@ -88,14 +88,17 @@ public class LogicTreeProcessor {
 	 */
 	public List<LogicTreePath> sampleLogicTreePaths(
 			Tree<LogicTreeNode> logicTree, Random rn, int n) {
+		
 		List<LogicTreePath> logicTreePaths = new ArrayList<LogicTreePath>();
+		
 		for (int i = 0; i < n; i++) {
 			List<LogicTreeNode> nodeList = new ArrayList<LogicTreeNode>();
+			// add root node
+			nodeList.add(0, logicTree.getRootElement().data);
 			double pathWeight = 1;
-			sampleLogicTreePath(logicTree.getRootElement(), rn, nodeList,
-					pathWeight);
-			System.out.println("final weight "+pathWeight);
-			logicTreePaths.add(new LogicTreePath(nodeList, pathWeight));
+			LogicTreePath treePath = new LogicTreePath(nodeList, pathWeight);
+			sampleLogicTreePath(logicTree.getRootElement(), rn, treePath);
+			logicTreePaths.add(treePath);
 		}
 		return logicTreePaths;
 	}
@@ -104,7 +107,7 @@ public class LogicTreeProcessor {
 	 * Sample logic tree path recursively.
 	 */
 	private void sampleLogicTreePath(Node<LogicTreeNode> node, Random rn,
-			List<LogicTreeNode> nodeList, double pathWeight) {
+			LogicTreePath path) {
 
 		List<Node<LogicTreeNode>> children = node.getChildren();
 		
@@ -113,10 +116,8 @@ public class LogicTreeProcessor {
 		} else {
 			// randomly select a child
 			Node<LogicTreeNode> sampledNode = sampleChild(rn, children);
-			nodeList.add(sampledNode.getData());
-			pathWeight = pathWeight
-					* sampledNode.getData().getUncertaintyWeight();
-			sampleLogicTreePath(sampledNode, rn, nodeList, pathWeight);
+			path.addNode(sampledNode.getData());
+			sampleLogicTreePath(sampledNode, rn, path);
 		}
 	}
 
@@ -148,28 +149,6 @@ public class LogicTreeProcessor {
 		}
 		return sampledNode;
 	}
-
-	// /**
-	// * Sample a logic tree path starting from node n in a recursive way.
-	// */
-	// private void sampleLogicTreePath(Tree<LogicTreeNode> logicTree,
-	// Node<LogicTreeNode> node, List<LogicTreeNode> path, int pathLen,
-	// Random rn, List<LogicTreePath> logicTreePaths) {
-	//
-	// if (node == null)
-	// return;
-	//
-	// // randomly select node
-	//
-	//
-	// if (path.size() <= pathLen) {
-	// path.add(pathLen, node.data);
-	// } else {
-	// path.set(pathLen, node.data);
-	// }
-	// pathLen = pathLen + 1;
-	//
-	// }
 
 	//
 	// /**

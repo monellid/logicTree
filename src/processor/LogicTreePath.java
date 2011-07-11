@@ -23,6 +23,11 @@ public class LogicTreePath {
 		return pathWeight;
 	}
 	
+	public void addNode(LogicTreeNode node){
+		this.path.add(node);
+		this.pathWeight = this.pathWeight * node.getUncertaintyWeight();
+	}
+	
     @Override
     public boolean equals(Object obj){
         if (!(obj instanceof LogicTreePath))

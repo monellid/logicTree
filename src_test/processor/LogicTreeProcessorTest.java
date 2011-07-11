@@ -91,59 +91,47 @@ public class LogicTreeProcessorTest {
 
 		long seed = 123456789;
 		Random rn = new Random(seed);
-		int n = 1;
+		int n = 100;
 		
 		for (String key : treeMap.keySet()) {
 			List<LogicTreePath> sampledPaths = treeProcessor
 					.sampleLogicTreePaths(treeMap.get(key), rn, n);
 			for(LogicTreePath path : sampledPaths){
-				System.out.println(path.getPathWeight()+" "+path.toString());
 				assertTrue(expectedPaths.contains(path));
 			}
 		}
 	}
 
 	// check logic tree path sampling algorithm. That is count number of times
-	// a node is sampled and compute the 'observed' probability (number of
+	// a path is sampled and compute the 'observed' probability (number of
 	// times observed / total number of path sampled) and compare with expected
-	// (that is defined in the file) probability. The two nodes in the first
-	// branching level are considered for this test.
+	// probability (that is the path weight computed by hand).
 	@Test
-	public void checkLogicTreePathSampling() {
+	public void checkLogicTreePathSampling2() {
 
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
 		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
-
+		
+		// sample logic tree
 		long seed = 123456789;
 		Random rn = new Random(seed);
-		int n = 1000;
-
-		// expected nodes in the first branching level
-		// check that this nodes are sampled according to their weight
-		// (0.5 each)
-		LogicTreeNode n11 = new LogicTreeNode("sourceModel",
-				"source_model_1.xml", 0.5);
-		LogicTreeNode n12 = new LogicTreeNode("sourceModel",
-				"source_model_2.xml", 0.5);
-
-		for (String key : treeMap.keySet()) {
-			List<LogicTreePath> sampledPaths = treeProcessor
-					.sampleLogicTreePaths(treeMap.get(key), rn, n);
-			for (LogicTreePath path : sampledPaths) {
-				System.out.println(path.toString());
-			}
-			double n11Count = 0;
-			double n12Count = 0;
-			for (LogicTreePath path : sampledPaths) {
-				if (path.getPath().get(1).equals(n11)) {
-					n11Count = n11Count + 1;
-				} else if (path.getPath().get(1).equals(n12)) {
-					n12Count = n12Count + 1;
+		int n = 5000;
+		List<LogicTreePath> sampledPaths = treeProcessor
+		.sampleLogicTreePaths(treeMap.get("1"), rn, n);
+		
+		// loop over expected paths
+		Set<LogicTreePath> expectedPaths = getExpectedPaths();
+		for(LogicTreePath path : expectedPaths){
+			double pathCount = 0.0;
+			// counts how many paths have been observed
+			for(LogicTreePath sampledPath : sampledPaths){
+				if(sampledPath.equals(path)){
+					pathCount = pathCount + 1.0;
 				}
 			}
-			assertEquals(0.5, n11Count / n, 0.01);
-			assertEquals(0.5, n12Count / n, 0.01);
+			// check observed against expected probability
+			assertEquals(path.getPathWeight(), pathCount / n, 0.01);
 		}
 	}
 
