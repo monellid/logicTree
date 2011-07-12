@@ -4,11 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import processor.LogicTreeProcessor;
 
 import tree.Node;
 import tree.Tree;
@@ -17,11 +21,15 @@ public class LogicTreeParserTest {
 
 	// test file containing symmetric logic tree defining source model
 	// epistemic uncertainties
-	public static final String SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "logic-tree-source-model.xml";
+	public static final String SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "symmetric-logic-tree-source-model.xml";
 
 	// test file containing logic trees defining gmpe
 	// epistemic uncertainties
 	public static final String LT_GMPE_TEST_FILE = "logic-tree-gmpe.xml";
+
+	// test file containing non-symmetric logic tree defining source model
+	// epistemic uncertainties
+	public static final String NON_SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "non-symmetric-logic-tree-source-model.xml";
 
 	@Before
 	public void setUp() {
@@ -193,18 +201,109 @@ public class LogicTreeParserTest {
 		Tree<LogicTreeNode> tree = parser.parse();
 		List<Node<LogicTreeNode>> children = tree.getRootElement()
 				.getChildren();
-		for(Node<LogicTreeNode> child : children){
-			List<Node<LogicTreeNode>> grandChildren = child
-			.getChildren();
+		for (Node<LogicTreeNode> child : children) {
+			List<Node<LogicTreeNode>> grandChildren = child.getChildren();
 			for (Node<LogicTreeNode> grandChild : grandChildren) {
 				assertTrue(grandChild.getChildren().isEmpty());
-				assertTrue(grandChild.data.getUncertaintyType().equalsIgnoreCase(
-						"gmpeModel"));
-				assertTrue(grandChild.data.getUncertaintyModel().equalsIgnoreCase(
-						"McVerryetal_2000_AttenRel"));
+				assertTrue(grandChild.data.getUncertaintyType()
+						.equalsIgnoreCase("gmpeModel"));
+				assertTrue(grandChild.data.getUncertaintyModel()
+						.equalsIgnoreCase("McVerryetal_2000_AttenRel"));
 				assertEquals(1.0, grandChild.data.getUncertaintyWeight(), 0);
-			}	
+			}
 		}
 	}
 
+	// check content of the non-symmetric logic tree
+	@Test
+	public void sourceModelNonSymmetricLogicTreeTest1() {
+
+		// expected nodes in the first branching level
+		LogicTreeNode node1 = new LogicTreeNode("_11", "sourceModel",
+				"source_model_1.xml", 0.2, "", "", "");
+		LogicTreeNode node2 = new LogicTreeNode("_12", "sourceModel",
+				"source_model_2.xml", 0.6, "", "", "");
+		LogicTreeNode node3 = new LogicTreeNode("_13", "sourceModel",
+				"source_model_3.xml", 0.2, "", "", "");
+		Set<LogicTreeNode> expectedNodes1 = new HashSet<LogicTreeNode>();
+		expectedNodes1.add(node1);
+		expectedNodes1.add(node2);
+		expectedNodes1.add(node3);
+
+		// expected nodes in the second branching level (linked to branches with
+		// ID = _11 _12)
+		LogicTreeNode node4 = new LogicTreeNode("_11_12_21", "abGRAbsolute",
+				"3.0 1.0", 0.2, "", "area", "");
+		LogicTreeNode node5 = new LogicTreeNode("_11_12_22", "abGRAbsolute",
+				"3.2 1.2", 0.6, "", "area", "");
+		LogicTreeNode node6 = new LogicTreeNode("_11_12_23", "abGRAbsolute",
+				"2.8 0.8", 0.2, "", "area", "");
+		Set<LogicTreeNode> expectedNodes2 = new HashSet<LogicTreeNode>();
+		expectedNodes2.add(node4);
+		expectedNodes2.add(node5);
+		expectedNodes2.add(node6);
+
+		// expected nodes in the second branching level (linked to branch with
+		// ID = _13)
+		LogicTreeNode node7 = new LogicTreeNode("_13_21", "abGRAbsolute",
+				"2.0 1.0", 0.2, "_2 _3", "", "");
+		LogicTreeNode node8 = new LogicTreeNode("_13_22", "abGRAbsolute",
+				"1.8 0.8", 0.8, "_2 _3", "", "");
+		Set<LogicTreeNode> expectedNodes3 = new HashSet<LogicTreeNode>();
+		expectedNodes3.add(node7);
+		expectedNodes3.add(node8);
+
+		// expected nodes in the third branching level (linked to all branches
+		// in the previous branching level)
+		LogicTreeNode node9 = new LogicTreeNode("_31", "maxMagGRAbsolute",
+				"7.5", 0.2, "", "", "Active Shallow Crust");
+		LogicTreeNode node10 = new LogicTreeNode("_32", "maxMagGRAbsolute",
+				"7.2", 0.8, "", "", "Active Shallow Crust");
+		Set<LogicTreeNode> expectedNodes4 = new HashSet<LogicTreeNode>();
+		expectedNodes4.add(node9);
+		expectedNodes4.add(node10);
+
+		LogicTreeParser parser = new LogicTreeParser(
+				NON_SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
+		Tree<LogicTreeNode> tree = parser.parse();
+
+		// check nodes in the first branching level
+		List<Node<LogicTreeNode>> children = tree.getRootElement()
+				.getChildren();
+		Set<LogicTreeNode> computedNodes = new HashSet<LogicTreeNode>();
+		for (Node<LogicTreeNode> n : children) {
+			computedNodes.add(n.getData());
+		}
+		assertTrue(expectedNodes1.equals(computedNodes));
+
+		// check nodes in the second branching level
+		for (Node<LogicTreeNode> child : children) {
+			List<Node<LogicTreeNode>> grandChildren = child.getChildren();
+			computedNodes = new HashSet<LogicTreeNode>();
+			for (Node<LogicTreeNode> n : grandChildren) {
+				computedNodes.add(n.getData());
+			}
+			if (child.getData().equals(node1) || child.getData().equals(node2)) {
+				assertTrue(expectedNodes2.equals(computedNodes));
+			}
+			if (child.getData().equals(node3)) {
+				assertTrue(expectedNodes3.equals(computedNodes));
+			}
+		}
+
+		// check nodes in the third branching level
+		for (Node<LogicTreeNode> child : children) {
+			List<Node<LogicTreeNode>> grandChildren = child.getChildren();
+			for (Node<LogicTreeNode> grandChild : grandChildren) {
+				List<Node<LogicTreeNode>> grandGrandChildren = grandChild
+						.getChildren();
+				computedNodes = new HashSet<LogicTreeNode>();
+				for (Node<LogicTreeNode> grandGrandChild : grandGrandChildren) {
+					computedNodes.add(grandGrandChild.getData());
+				}
+				assertTrue(expectedNodes4.equals(computedNodes));
+			}
+		}
+
+	}
 }

@@ -310,6 +310,8 @@
             <xs:enumeration value="maxMagGRRelativeUncorrelated"/>
             <xs:enumeration value="bGRRelativeCorrelated"/>
             <xs:enumeration value="bGRRelativeUncorrelated"/>
+            <xs:enumeration value="abGRAbsolute"/>
+            <xs:enumeration value="maxMagGRAbsolute"/>
         </xs:restriction>
     </xs:simpleType>
     
@@ -333,7 +335,7 @@
 
     <xs:complexType name="LogicTreeBranchSet">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element name="logicTreeBranch" type="LogicTreeBranch"/>
+            <xs:element name="logicTreeBranch" type="LogicTreeBranch" />
         </xs:sequence>
         <xs:attribute name="branchingLevel" type="xs:positiveInteger" use="required"/>
         <xs:attribute name="uncertaintyType" type="LogicTreeBranchUncertaintyType" use="required"/>
