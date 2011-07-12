@@ -21,7 +21,7 @@ public class LogicTreeProcessorTest {
 
 	// test file containing symmetric logic tree defining source model
 	// epistemic uncertainties
-	public static final String SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "logic-tree-source-model.xml";
+	public static final String SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "symmetric-logic-tree-source-model.xml";
 
 	// test file containing symmetric logic tree defining source model
 	// epistemic uncertainties with invalid weights
@@ -42,11 +42,9 @@ public class LogicTreeProcessorTest {
 
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
-		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
+		Tree<LogicTreeNode> tree = parser.parse();
 
-		for (String key : treeMap.keySet()) {
-			assertTrue(treeProcessor.hasValidWeights(treeMap.get(key)));
-		}
+		assertTrue(treeProcessor.hasValidWeights(tree));
 	}
 
 	// check that INVALID_SYMMETRIC_LT_SRC_MODEL_TEST_FILE has invalid weights.
@@ -55,11 +53,9 @@ public class LogicTreeProcessorTest {
 
 		LogicTreeParser parser = new LogicTreeParser(
 				INVALID_SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
-		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
+		Tree<LogicTreeNode> tree = parser.parse();
 
-		for (String key : treeMap.keySet()) {
-			assertFalse(treeProcessor.hasValidWeights(treeMap.get(key)));
-		}
+		assertFalse(treeProcessor.hasValidWeights(tree));
 	}
 
 	// check that logic tree paths are computed correctly. That is
@@ -69,37 +65,34 @@ public class LogicTreeProcessorTest {
 
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
-		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
+		Tree<LogicTreeNode> tree = parser.parse();
 
-		for (String key : treeMap.keySet()) {
-			Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
-					treeProcessor.computeAllLogicTreePaths(treeMap.get(key)));
-			assertTrue(computedPaths.equals(getExpectedPaths()));
-		}
+		Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
+				treeProcessor.computeAllLogicTreePaths(tree));
+		assertTrue(computedPaths.equals(getExpectedPaths()));
 	}
 
 	// check that sampled paths are contained in the expected set of logic tree
 	// paths.
 	@Test
 	public void checkLogicTreePathsSampling1() {
-		
+
 		Set<LogicTreePath> expectedPaths = getExpectedPaths();
-		
+
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
-		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
+		Tree<LogicTreeNode> tree = parser.parse();
 
 		long seed = 123456789;
 		Random rn = new Random(seed);
 		int n = 100;
-		
-		for (String key : treeMap.keySet()) {
-			List<LogicTreePath> sampledPaths = treeProcessor
-					.sampleLogicTreePaths(treeMap.get(key), rn, n);
-			for(LogicTreePath path : sampledPaths){
-				assertTrue(expectedPaths.contains(path));
-			}
+
+		List<LogicTreePath> sampledPaths = treeProcessor.sampleLogicTreePaths(
+				tree, rn, n);
+		for (LogicTreePath path : sampledPaths) {
+			assertTrue(expectedPaths.contains(path));
 		}
+
 	}
 
 	// check logic tree path sampling algorithm. That is count number of times
@@ -111,22 +104,22 @@ public class LogicTreeProcessorTest {
 
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
-		Map<String, Tree<LogicTreeNode>> treeMap = parser.parse();
-		
+		Tree<LogicTreeNode> tree = parser.parse();
+
 		// sample logic tree
 		long seed = 123456789;
 		Random rn = new Random(seed);
 		int n = 5000;
-		List<LogicTreePath> sampledPaths = treeProcessor
-		.sampleLogicTreePaths(treeMap.get("1"), rn, n);
-		
+		List<LogicTreePath> sampledPaths = treeProcessor.sampleLogicTreePaths(
+				tree, rn, n);
+
 		// loop over expected paths
 		Set<LogicTreePath> expectedPaths = getExpectedPaths();
-		for(LogicTreePath path : expectedPaths){
+		for (LogicTreePath path : expectedPaths) {
 			double pathCount = 0.0;
 			// counts how many paths have been observed
-			for(LogicTreePath sampledPath : sampledPaths){
-				if(sampledPath.equals(path)){
+			for (LogicTreePath sampledPath : sampledPaths) {
+				if (sampledPath.equals(path)) {
 					pathCount = pathCount + 1.0;
 				}
 			}
@@ -140,22 +133,22 @@ public class LogicTreeProcessorTest {
 
 		// these are the expected nodes
 		LogicTreeNode n0 = new LogicTreeNode();
-		LogicTreeNode n11 = new LogicTreeNode("sourceModel",
-				"source_model_1.xml", 0.5);
-		LogicTreeNode n12 = new LogicTreeNode("sourceModel",
-				"source_model_2.xml", 0.5);
-		LogicTreeNode n21 = new LogicTreeNode(
-				"maxMagnitudeGutenbergRichterRelative", "0.2", 0.2);
-		LogicTreeNode n22 = new LogicTreeNode(
-				"maxMagnitudeGutenbergRichterRelative", "0.0", 0.6);
-		LogicTreeNode n23 = new LogicTreeNode(
-				"maxMagnitudeGutenbergRichterRelative", "-0.2", 0.2);
-		LogicTreeNode n31 = new LogicTreeNode("bValueGutenbergRichterRelative",
-				"0.1", 0.2);
-		LogicTreeNode n32 = new LogicTreeNode("bValueGutenbergRichterRelative",
-				"0.0", 0.6);
-		LogicTreeNode n33 = new LogicTreeNode("bValueGutenbergRichterRelative",
-				"-0.1", 0.2);
+		LogicTreeNode n11 = new LogicTreeNode("_11", "sourceModel",
+				"source_model_1.xml", 0.5, "", "", "");
+		LogicTreeNode n12 = new LogicTreeNode("_12", "sourceModel",
+				"source_model_2.xml", 0.5, "", "", "");
+		LogicTreeNode n21 = new LogicTreeNode("_21",
+				"maxMagGRRelativeCorrelated", "0.2", 0.2, "", "", "");
+		LogicTreeNode n22 = new LogicTreeNode("_22",
+				"maxMagGRRelativeCorrelated", "0.0", 0.6, "", "", "");
+		LogicTreeNode n23 = new LogicTreeNode("_23",
+				"maxMagGRRelativeCorrelated", "-0.2", 0.2, "", "", "");
+		LogicTreeNode n31 = new LogicTreeNode("_31",
+				"bGRRelativeCorrelated", "0.1", 0.2, "", "", "");
+		LogicTreeNode n32 = new LogicTreeNode("_32",
+				"bGRRelativeCorrelated", "0.0", 0.6, "", "", "");
+		LogicTreeNode n33 = new LogicTreeNode("_33",
+				"bGRRelativeCorrelated", "-0.1", 0.2, "", "", "");
 
 		// these are the expected tree paths. There are a total of 1(root)*2*3*3
 		// = 18 paths.
