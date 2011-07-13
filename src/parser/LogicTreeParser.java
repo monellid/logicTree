@@ -20,40 +20,38 @@ import tree.Tree;
 /**
  * Parse logicTree element.
  * 
- * A logicTree element is defined as a sequence of logicTreeBranchSet elements.
- * A logicTreeBranchSet element has two required attributes:
+ * A LogicTree is defined as a sequence of LogicTreeBranchingLevel elements. The
+ * position in the sequence specifies in which level of the tree the branching
+ * level is located. That is, the first LogicTreeBranchingLevel element in the
+ * sequence represents the first branching level in the tree, the second element
+ * the second branching level in the tree, and so on.
  * 
- * - branchingLevel [a positive integer indicating at which level in the tree
- * the branch set is located].
+ * A LogicTreeBranchingLevel is defined as a sequence of LogicTreeBranchSet
+ * elements. Each LogicTreeBranchSet defines a particular epistemic uncertainty
+ * inside a branching level.
  * 
- * - uncertaintyType [of type nrml:LogicTreeBranchUncertaintyType, that is a
- * string restricted to particular values that specify which type of uncertainty
- * the branch set is describing].
+ * A LogicTreeBranchSet is defined as a sequence of LogicTreeBranch elements. A
+ * branch set has two required attributes (ID and uncertaintyType (defining the
+ * type of epistemic uncertainty the branch set is defining)). Optional
+ * attributes are:
  * 
- * and a number of optional attributes.
+ * - applyToBranches: to be used to specify to which LogicTreeBranch elements
+ * (one or more), in the previous branching level, the branch set is linked to.
+ * The default is the keyword ALL, which means that a branch set is by default
+ * linked to all branches in the previous branching level.
  * 
- * - applyToBranches (gml:NCNameList) [specifies to which branches (one or
- * more), defined in the previous branching levels, the current branch set is
- * linked to.]
+ * - applyToSources: it can be used in the Source Model Logic Tree definition,
+ * it allows to specify to which source in a source model the uncertainty
+ * applies to.
  * 
- * - applyToSources (gml:NCNameList) [in case of a source model logic tree, it
- * allows to specify to which particular source (or sources), the uncertainties
- * defined in the branch set apply to.]
+ * - applyToSourceType: it can be used in the Source Model Logic Tree
+ * definition, it allows to specify to which source type (area, point, simple
+ * fault, complex fault) the uncertainty applies to.
  * 
- * - applyToSourceType (nrml:SourceType) [in case of a source model logic tree,
- * it allows to specify to which source type (simple faults, area source, etc.),
- * the uncertainties defined in the branch set apply to.]
- * 
- * - applyToTectonicRegionType (nrml:TectonicRegion) [in case of a source model
- * or gmpe logic tree, it allows to specify, to which tectonic region type, the
- * uncertainties defined in the branch set apply to.]
- * 
- * The parser assumes that logicTreeBranchSets are listed in increasing order of
- * branching level. For a certain branching level, there can be more than one
- * branch sets (in case they apply to different branches in the previous
- * branching levels for instance). But is not allowed to have a branch set for
- * branching level = 2 to be defined before a branch set for branching level =
- * 1. (NOTE: the current version of the parser does not check that).
+ * - applyToTectonicRegionType: it can be used in both the Source Model and GMPE
+ * Logic Tree definition, it allows to specify to which tectonic region type
+ * (Active Shallow Crust, Stable Shallow Crust, etc.) the uncertainty applies
+ * to.
  * 
  * A logicTreeBranchSet element contains a sequence of logicTreeBranch elements.
  * Each logicTreeBranch contains as required attribute:
@@ -78,8 +76,8 @@ import tree.Tree;
  * 
  * Returns a {@link Tree} containing nodes of type {@link LogicTreeNode}.The
  * root of each tree is defined as an 'empty' logic tree node (that is with
- * uncertainty type and uncertainty model set to empty strings but with weight
- * equal to 1).
+ * uncertainty type, uncertainty model, and applyTo flags set to empty strings
+ * but with weight equal to 1).
  * 
  * @author damianomonelli
  * 
@@ -90,7 +88,6 @@ public class LogicTreeParser {
 
 	private final Tree<LogicTreeNode> logicTree;
 
-	private static final String BRANCHING_LEVEL = "branchingLevel";
 	private static final String APPLY_TO_BRANCHES = "applyToBranches";
 	private static final String APPLY_TO_SOURCES = "applyToSources";
 	private static final String APPLY_TO_SOURCE_TYPE = "applyToSourceType";
@@ -167,6 +164,20 @@ public class LogicTreeParser {
 
 		Iterator i = logicTreeElem.elementIterator();
 		while (i.hasNext()) {
+			Element branchingLevel = (Element) i.next();
+
+			parseLogicTreeBranchingLevel(branchingLevel, logicTree);
+
+		}
+	}
+
+	/**
+	 * Parse attributes and children of logicTreeBranchingLevel element.
+	 */
+	private void parseLogicTreeBranchingLevel(Element branchingLevel,
+			Tree<LogicTreeNode> logicTree) {
+		Iterator i = branchingLevel.elementIterator();
+		while (i.hasNext()) {
 			Element branchSet = (Element) i.next();
 
 			parseLogicTreeBranchSet(branchSet, logicTree);
@@ -182,9 +193,6 @@ public class LogicTreeParser {
 	 */
 	private void parseLogicTreeBranchSet(Element branchSet,
 			Tree<LogicTreeNode> logicTree) {
-
-		int indexBranchingLevel = Integer.parseInt(branchSet
-				.attributeValue(BRANCHING_LEVEL));
 
 		String uncertaintyType = branchSet.attributeValue(UNCERTAINTY_TYPE);
 		String applyToBranches = "";
@@ -213,7 +221,8 @@ public class LogicTreeParser {
 
 		// get all the current leaf nodes and loop over them.
 		// Add a node to a leaf node only if the applyToBranches attribute is
-		// empty, or if the leaf node's branchID is among the IDs listed in applyToBranches
+		// empty, or if the leaf node's branchID is among the IDs listed in
+		// applyToBranches
 		// flag.
 		List<Node<LogicTreeNode>> nList = logicTree.getLeafNodes();
 		for (Node<LogicTreeNode> n : nList) {
@@ -241,7 +250,7 @@ public class LogicTreeParser {
 						logicTreeNode);
 
 				// add node as a child
-				if (branchIDs.isEmpty()
+				if (branchIDs.contains("ALL")
 						|| branchIDs.contains(n.getData().getBranchID())) {
 					n.addChild(node);
 				}

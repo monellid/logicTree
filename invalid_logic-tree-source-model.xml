@@ -3,9 +3,12 @@
       xmlns="http://openquake.org/xmlns/nrml/0.2"
       gml:id="n1">
       
-        <logicTree id="lt1">
+      <logicTree logicTreeID="lt1">
         
-            <logicTreeBranchSet branchingLevel="1" uncertaintyType="sourceModel">
+        <logicTreeBranchingLevel branchingLevelID="lt11">
+        
+            <logicTreeBranchSet branchSetID="lt11_1" uncertaintyType="sourceModel">
+            
                 <logicTreeBranch branchID="_11">
                     <uncertaintyModel>source_model_1.xml</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
@@ -15,9 +18,15 @@
                     <uncertaintyModel>source_model_2.xml</uncertaintyModel>
                     <uncertaintyWeight>0.5</uncertaintyWeight>
                 </logicTreeBranch>
+                
             </logicTreeBranchSet>
             
-            <logicTreeBranchSet branchingLevel="2" uncertaintyType="maxMagGRRelativeCorrelated">
+        </logicTreeBranchingLevel>
+        
+        <logicTreeBranchingLevel branchingLevelID="lt12">
+        
+            <logicTreeBranchSet branchSetID="lt12_1" uncertaintyType="maxMagGRRelativeCorrelated">
+            
                 <logicTreeBranch branchID="_21">
                     <uncertaintyModel>0.2</uncertaintyModel>
                     <uncertaintyWeight>0.2</uncertaintyWeight>
@@ -33,9 +42,14 @@
                     <uncertaintyWeight>0.2</uncertaintyWeight>
                 </logicTreeBranch>
                 
-            </logicTreeBranchSet>
-            
-            <logicTreeBranchSet branchingLevel="3" uncertaintyType="bGRRelativeCorrelated">
+           </logicTreeBranchSet>
+        
+        </logicTreeBranchingLevel>
+        
+        <logicTreeBranchingLevel branchingLevelID="lt13">
+        
+             <logicTreeBranchSet branchSetID="lt13_1" uncertaintyType="bGRRelativeCorrelated">
+             
                 <logicTreeBranch branchID="_31">
                     <uncertaintyModel>0.1</uncertaintyModel>
                     <uncertaintyWeight>0.2</uncertaintyWeight>
@@ -46,11 +60,14 @@
                     <uncertaintyWeight>0.6</uncertaintyWeight>
                 </logicTreeBranch>
                 
-                <logicTreeBranch  branchID="_33">
+                <logicTreeBranch branchID="_33">
                     <uncertaintyModel>-0.1</uncertaintyModel>
                     <uncertaintyWeight>0.2</uncertaintyWeight>
                 </logicTreeBranch>
+                
             </logicTreeBranchSet>
             
-        </logicTree>
+        </logicTreeBranchingLevel>
+            
+     </logicTree>
 </nrml>
