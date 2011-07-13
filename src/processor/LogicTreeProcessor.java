@@ -88,9 +88,9 @@ public class LogicTreeProcessor {
 	 */
 	public List<LogicTreePath> sampleLogicTreePaths(
 			Tree<LogicTreeNode> logicTree, Random rn, int n) {
-		
+
 		List<LogicTreePath> logicTreePaths = new ArrayList<LogicTreePath>();
-		
+
 		for (int i = 0; i < n; i++) {
 			List<LogicTreeNode> nodeList = new ArrayList<LogicTreeNode>();
 			// add root node
@@ -110,7 +110,7 @@ public class LogicTreeProcessor {
 			LogicTreePath path) {
 
 		List<Node<LogicTreeNode>> children = node.getChildren();
-		
+
 		if (children.isEmpty()) {
 			return;
 		} else {
@@ -148,6 +148,24 @@ public class LogicTreeProcessor {
 			}
 		}
 		return sampledNode;
+	}
+
+	/**
+	 * Join logic trees.
+	 */
+	public Tree<LogicTreeNode> joinTrees(List<Tree<LogicTreeNode>> trees) {
+		Tree<LogicTreeNode> tree = new Tree<LogicTreeNode>();
+		// set as root node, the root of the first logic tree
+		tree.setRootElement(trees.get(0).getRootElement());
+		// loop over the remaining logic trees, and add each tree to the leaf
+		// nodes
+		for (int i = 1; i < trees.size(); i++) {
+			List<Node<LogicTreeNode>> leafNodes = tree.getLeafNodes();
+			for (Node<LogicTreeNode> node : leafNodes) {
+				node.addChild(trees.get(i).getRootElement());
+			}
+		}
+		return tree;
 	}
 
 }

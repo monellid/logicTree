@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -25,11 +26,14 @@ public class LogicTreeProcessorTest {
 
 	// test file containing symmetric logic tree defining source model
 	// epistemic uncertainties with invalid weights
-	public static final String INVALID_SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "invalid_logic-tree-source-model.xml";
+	public static final String INVALID_SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "invalid-weights-logic-tree-source-model.xml";
 
 	// test file containing non symmetric logic tree defining source model
 	// epistemic uncertainties
 	public static final String NON_SYMMETRIC_LT_SRC_MODEL_TEST_FILE = "non-symmetric-logic-tree-source-model.xml";
+
+	// test file containing logic tree defining gmpe epistemic uncertainties
+	public static final String GMPE_LT_TEST_FILE = "logic-tree-gmpe.xml";
 
 	private LogicTreeProcessor treeProcessor;
 
@@ -73,7 +77,7 @@ public class LogicTreeProcessorTest {
 
 		Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
 				treeProcessor.computeAllLogicTreePaths(tree));
-		assertTrue(computedPaths.equals(getExpectedPaths()));
+		assertTrue(computedPaths.equals(getExpectedPathsSymmetricLogicTree()));
 	}
 
 	// check that logic tree paths are computed correctly (for non-symmetric
@@ -88,7 +92,20 @@ public class LogicTreeProcessorTest {
 
 		Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
 				treeProcessor.computeAllLogicTreePaths(tree));
-		assertTrue(computedPaths.equals(getExpectedPathsForNonSymmetricLogicTree()));
+		assertTrue(computedPaths
+				.equals(getExpectedPathsForNonSymmetricLogicTree()));
+	}
+
+	// check logic tree path computation for GMPE logic tree. That is compare
+	// computed logic tree paths with logic tree paths computed by hand.
+	@Test
+	public void checkLogicTreePathComputationGMPELogicTree() {
+		LogicTreeParser parser = new LogicTreeParser(GMPE_LT_TEST_FILE);
+		Tree<LogicTreeNode> tree = parser.parse();
+
+		Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
+				treeProcessor.computeAllLogicTreePaths(tree));
+		assertTrue(computedPaths.equals(getExpetedPathsGMPELogicTree()));
 	}
 
 	// check that sampled paths are contained in the expected set of logic tree
@@ -96,7 +113,7 @@ public class LogicTreeProcessorTest {
 	@Test
 	public void checkLogicTreePathsSampling1() {
 
-		Set<LogicTreePath> expectedPaths = getExpectedPaths();
+		Set<LogicTreePath> expectedPaths = getExpectedPathsSymmetricLogicTree();
 
 		LogicTreeParser parser = new LogicTreeParser(
 				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
@@ -133,7 +150,7 @@ public class LogicTreeProcessorTest {
 				tree, rn, n);
 
 		// loop over expected paths
-		Set<LogicTreePath> expectedPaths = getExpectedPaths();
+		Set<LogicTreePath> expectedPaths = getExpectedPathsSymmetricLogicTree();
 		for (LogicTreePath path : expectedPaths) {
 			double pathCount = 0.0;
 			// counts how many paths have been observed
@@ -147,8 +164,100 @@ public class LogicTreeProcessorTest {
 		}
 	}
 
+	// check joinTree method by comparing expected with computed paths.
+	// Takes source model and GMPE logic trees and joins them. Then check the
+	// computed paths.
+	@Test
+	public void checkJoinTreesMethod() {
+		
+		// create source model and gmpe logic trees and then combine them.
+		LogicTreeParser parser = new LogicTreeParser(
+				SYMMETRIC_LT_SRC_MODEL_TEST_FILE);
+		Tree<LogicTreeNode> sourceModelTree = parser.parse();
+
+		parser = new LogicTreeParser(GMPE_LT_TEST_FILE);
+		Tree<LogicTreeNode> gmpeTree = parser.parse();
+		
+		List<Tree<LogicTreeNode>> trees = new ArrayList<Tree<LogicTreeNode>>();
+		trees.add(sourceModelTree);
+		trees.add(gmpeTree);
+		
+		Tree<LogicTreeNode> joinedTree = treeProcessor.joinTrees(trees);
+		
+		Set<LogicTreePath> computedPaths = new HashSet<LogicTreePath>(
+				treeProcessor.computeAllLogicTreePaths(joinedTree));
+		for(LogicTreePath path : computedPaths){
+			System.out.println(path.toString());
+		}
+		assertTrue(computedPaths.equals(getJoinedTreesExpectedPaths()));
+
+	}
+
+	private Set<LogicTreePath> getJoinedTreesExpectedPaths() {
+		Set<LogicTreePath> expectedPaths = new HashSet<LogicTreePath>();
+		// expected source model and gmpe logic tree paths
+		Set<LogicTreePath> sourceModelExpectedPaths = getExpectedPathsSymmetricLogicTree();
+		Set<LogicTreePath> gmpeExpectedPaths = getExpetedPathsGMPELogicTree();
+		// join expected paths
+		Iterator<LogicTreePath> sourceModelPathsIter = sourceModelExpectedPaths
+				.iterator();
+		while (sourceModelPathsIter.hasNext()) {
+			LogicTreePath sourceModelPath = sourceModelPathsIter.next();
+			Iterator<LogicTreePath> gmpePathsIter = gmpeExpectedPaths
+					.iterator();
+			while (gmpePathsIter.hasNext()) {
+				LogicTreePath gmpePath = gmpePathsIter.next();
+				List<LogicTreeNode> nodeList = new ArrayList<LogicTreeNode>();
+				nodeList.addAll(sourceModelPath.getPath());
+				nodeList.addAll(gmpePath.getPath());
+				LogicTreePath path = new LogicTreePath(nodeList,
+						sourceModelPath.getPathWeight()
+								* gmpePath.getPathWeight());
+				expectedPaths.add(path);
+			}
+		}
+		return expectedPaths;
+	}
+
+	// logic tree paths in GMPE_LT_TEST_FILE
+	private Set<LogicTreePath> getExpetedPathsGMPELogicTree() {
+
+		// these are the expected nodes
+		LogicTreeNode n0 = new LogicTreeNode();
+		LogicTreeNode n11 = new LogicTreeNode("_11", "gmpeModel",
+				"BA_2008_AttenRel", 0.5, "", "", "Active Shallow Crust");
+		LogicTreeNode n12 = new LogicTreeNode("_12", "gmpeModel",
+				"CB_2008_AttenRel", 0.5, "", "", "Active Shallow Crust");
+		LogicTreeNode n21 = new LogicTreeNode("_21", "gmpeModel",
+				"McVerryetal_2000_AttenRel", 1.0, "", "",
+				"Subduction Interface");
+
+		// these are the expected tree paths. There are a total of 1(root)*2*1 =
+		// 2 paths
+		Set<LogicTreePath> expectedPaths = new HashSet<LogicTreePath>();
+
+		// path 1
+		List<LogicTreeNode> p1 = new ArrayList<LogicTreeNode>();
+		p1.add(0, n0);
+		p1.add(1, n11);
+		p1.add(2, n21);
+		double pathWeight = 0.5 * 1.0;
+		LogicTreePath path1 = new LogicTreePath(p1, pathWeight);
+		// path 2
+		List<LogicTreeNode> p2 = new ArrayList<LogicTreeNode>();
+		p2.add(0, n0);
+		p2.add(1, n12);
+		p2.add(2, n21);
+		pathWeight = 0.5 * 1.0;
+		LogicTreePath path2 = new LogicTreePath(p2, pathWeight);
+
+		expectedPaths.add(path1);
+		expectedPaths.add(path2);
+		return expectedPaths;
+	}
+
 	// logic tree paths in SYMMETRIC_LT_SRC_MODEL_TEST_FILE
-	private Set<LogicTreePath> getExpectedPaths() {
+	private Set<LogicTreePath> getExpectedPathsSymmetricLogicTree() {
 
 		// these are the expected nodes
 		LogicTreeNode n0 = new LogicTreeNode();
