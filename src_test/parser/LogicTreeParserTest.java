@@ -12,10 +12,10 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import processor.LogicTreeProcessor;
 
 import tree.Node;
 import tree.Tree;
+import utils.LogicTreeUtils;
 
 public class LogicTreeParserTest {
 

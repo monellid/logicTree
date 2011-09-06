@@ -1,4 +1,4 @@
-package processor;
+package utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import parser.LogicTreeNode;
 import tree.Node;
 import tree.Tree;
 
-public class LogicTreeProcessor {
+public class LogicTreeUtils {
 
-	public LogicTreeProcessor() {
+	public LogicTreeUtils() {
 
 	}
 

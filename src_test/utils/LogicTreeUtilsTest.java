@@ -1,4 +1,4 @@
-package processor;
+package utils;
 
 import static org.junit.Assert.*;
 
@@ -17,8 +17,10 @@ import org.junit.Test;
 import parser.LogicTreeNode;
 import parser.LogicTreeParser;
 import tree.Tree;
+import utils.LogicTreePath;
+import utils.LogicTreeUtils;
 
-public class LogicTreeProcessorTest {
+public class LogicTreeUtilsTest {
 
 	// test file containing symmetric logic tree defining source model
 	// epistemic uncertainties
@@ -35,13 +37,13 @@ public class LogicTreeProcessorTest {
 	// test file containing logic tree defining gmpe epistemic uncertainties
 	public static final String GMPE_LT_TEST_FILE = "logic-tree-gmpe.xml";
 
-	private LogicTreeProcessor treeProcessor;
+	private LogicTreeUtils treeProcessor;
 
 	@Before
 	public void setUp() {
 		System.setProperty("openquake.nrml.schema", new File(
 				"docs/schema/nrml.xsd").getAbsolutePath());
-		treeProcessor = new LogicTreeProcessor();
+		treeProcessor = new LogicTreeUtils();
 	}
 
 	// check that SYMMETRIC_LT_SRC_MODEL_TEST_FILE has valid weights.
