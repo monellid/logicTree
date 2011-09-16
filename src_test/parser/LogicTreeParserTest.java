@@ -92,7 +92,7 @@ public class LogicTreeParserTest {
 			List<Node<LogicTreeNode>> children = node.getChildren();
 			for (Node<LogicTreeNode> child : children) {
 				assertTrue(child.data.getUncertaintyType().equalsIgnoreCase(
-						"maxMagGRRelativeCorrelated"));
+						"maxMagGRRelative"));
 				assertTrue(child.data.getUncertaintyModel().equalsIgnoreCase(
 						"0.2")
 						|| child.data.getUncertaintyModel().equalsIgnoreCase(
@@ -126,7 +126,7 @@ public class LogicTreeParserTest {
 			for (Node<LogicTreeNode> child : node.getChildren()) {
 				for (Node<LogicTreeNode> grandChild : child.getChildren()) {
 					assertTrue(grandChild.data.getUncertaintyType()
-							.equalsIgnoreCase("bGRRelativeCorrelated"));
+							.equalsIgnoreCase("bGRRelative"));
 					assertTrue(grandChild.data.getUncertaintyModel()
 							.equalsIgnoreCase("0.1")
 							|| grandChild.data.getUncertaintyModel()

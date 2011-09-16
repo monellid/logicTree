@@ -268,16 +268,16 @@ public class LogicTreeUtilsTest {
 		LogicTreeNode n12 = new LogicTreeNode("_12", "sourceModel",
 				"source_model_2.xml", 0.5, "", "", "");
 		LogicTreeNode n21 = new LogicTreeNode("_21",
-				"maxMagGRRelativeCorrelated", "0.2", 0.2, "", "", "");
+				"maxMagGRRelative", "0.2", 0.2, "", "", "");
 		LogicTreeNode n22 = new LogicTreeNode("_22",
-				"maxMagGRRelativeCorrelated", "0.0", 0.6, "", "", "");
+				"maxMagGRRelative", "0.0", 0.6, "", "", "");
 		LogicTreeNode n23 = new LogicTreeNode("_23",
-				"maxMagGRRelativeCorrelated", "-0.2", 0.2, "", "", "");
-		LogicTreeNode n31 = new LogicTreeNode("_31", "bGRRelativeCorrelated",
+				"maxMagGRRelative", "-0.2", 0.2, "", "", "");
+		LogicTreeNode n31 = new LogicTreeNode("_31", "bGRRelative",
 				"0.1", 0.2, "", "", "");
-		LogicTreeNode n32 = new LogicTreeNode("_32", "bGRRelativeCorrelated",
+		LogicTreeNode n32 = new LogicTreeNode("_32", "bGRRelative",
 				"0.0", 0.6, "", "", "");
-		LogicTreeNode n33 = new LogicTreeNode("_33", "bGRRelativeCorrelated",
+		LogicTreeNode n33 = new LogicTreeNode("_33", "bGRRelative",
 				"-0.1", 0.2, "", "", "");
 
 		// these are the expected tree paths. There are a total of 1(root)*2*3*3

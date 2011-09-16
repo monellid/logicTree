@@ -306,10 +306,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="gmpeModel"/>
             <xs:enumeration value="sourceModel"/>
-            <xs:enumeration value="maxMagGRRelativeCorrelated"/>
-            <xs:enumeration value="maxMagGRRelativeUncorrelated"/>
-            <xs:enumeration value="bGRRelativeCorrelated"/>
-            <xs:enumeration value="bGRRelativeUncorrelated"/>
+            <xs:enumeration value="maxMagGRRelative"/>
+            <xs:enumeration value="bGRRelative"/>
             <xs:enumeration value="abGRAbsolute"/>
             <xs:enumeration value="maxMagGRAbsolute"/>
         </xs:restriction>
